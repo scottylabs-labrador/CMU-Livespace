@@ -8,9 +8,9 @@
 
    ```sh
    supabase link --project-ref YOUR_PROJECT_REF
-   supabase db push --linked --dry-run
-   supabase db push --linked
-   supabase functions deploy ingest-noise --project-ref YOUR_PROJECT_REF --use-api --no-verify-jwt
+   supabase db push --remote --dry-run
+   supabase db push --remote
+   supabase functions deploy ingest-noise --use-api --no-verify-jwt
    ```
 
    The Edge Function uses Supabase's server-provided `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. The ingestion route authenticates individual device tokens. Gateway JWT verification is disabled for this function only.
