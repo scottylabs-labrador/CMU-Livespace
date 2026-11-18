@@ -1,0 +1,4 @@
+project_id = "cmu-livespace"
+
+[functions.ingest-noise]
+verify_jwt = false

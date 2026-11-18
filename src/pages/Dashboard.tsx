@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Activity, Coffee, ShieldCheck } from 'lucide-react';
+import { historyRanges, type HistoryRange } from '../services/locations';
 import { useLocations } from '../hooks/useLocations';
+import { SoundHistory } from '../components/SoundHistory';
 import { CurrentConditions } from '../components/CurrentConditions';
 
 export function Dashboard() {
-  const { locations, loading, error, retry } = useLocations();
+  const [range, setRange] = useState<HistoryRange>('hour');
+  const { space, history, loading, error, retry } = useLocations(range);
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
-  const space = locations[0];
-  const age = space ? Math.max(0, Math.floor((now - Date.parse(space.updatedAt)) / 1000)) : 0;
-
   return (
     <>
       <header className="header">
@@ -26,10 +26,15 @@ export function Dashboard() {
           <p>A feel for the space, before you go.</p>
         </div>
         {error && <div className="error" role="alert"><span>{error}</span><button onClick={retry}>Try again</button></div>}
-        {loading ? <div className="skeleton" role="status"><span>Checking the cafe…</span></div> : space ? <>
-          <CurrentConditions space={space} />
-          <p className="freshness"><span className="live-dot" />Mock live data<span className="separator">·</span>Updated {age === 0 ? 'just now' : `${age}s ago`}</p>
-        </> : !error && <div className="error" role="status">Cafe readings are unavailable.<button onClick={retry}>Try again</button></div>}
+        {loading ? <div className="skeleton" role="status">Checking the cafe…</div> :
+          <CurrentConditions space={space} now={now} error={error} />}
+        {!loading && <SoundHistory history={history ?? []} error={error} pending={!history && !error}
+          rangeLabel={range === 'hour' ? 'dBFS' : 'Equivalent dBFS'}
+          controls={<select aria-label="History range" value={range} onChange={event => setRange(event.target.value as HistoryRange)}>
+            {Object.entries(historyRanges).map(([value, option]) =>
+              <option key={value} value={value}>{option.label}</option>,
+            )}
+          </select>} />}
         <footer><ShieldCheck size={18} aria-hidden="true" /><p>CMU Livespace estimates environmental sound and activity without cameras, identity tracking, or storing conversations.</p></footer>
       </main>
     </>

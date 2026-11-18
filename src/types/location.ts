@@ -1,5 +1,24 @@
-export type Crowd = 'Low' | 'Moderate' | 'Busy' | 'Very Busy';
-export type SoundStatus = 'Quiet' | 'Moderate' | 'Lively' | 'Loud';
-export type Purpose = 'all' | 'studying' | 'conversation' | 'group';
-export interface HistoryPoint { time: string; sound: number; activity: number }
-export interface SpaceLocation { id: string; name: string; subtitle: string; kind: 'coffee' | 'book' | 'sofa' | 'building' | 'music' | 'tree'; walkMinutes: number; soundDb: number; soundStatus: SoundStatus; crowd: Crowd; radar?: { near: number; mid: number; far: number }; updatedAt: string; history: HistoryPoint[] }
+export interface Measurement {
+  timestamp: string;
+  noise_dbfs: number;
+}
+
+export interface Sensor {
+  id: string;
+  name: string | null;
+  enabled: boolean;
+  staleAfterSeconds: number;
+  lastSeenAt: string | null;
+  latest: Measurement | null;
+}
+
+export interface HistoryPoint extends Measurement {
+  id: string;
+  device_id: string;
+}
+
+export interface SpaceLocation {
+  name: string;
+  devices: Sensor[];
+  history: HistoryPoint[];
+}
