@@ -1,0 +1,4 @@
+import { useEffect, useState } from 'react';
+import { locationService } from '../services/locations';
+import type { SpaceLocation } from '../types/location';
+export function useLocations() { const [locations,setLocations]=useState<SpaceLocation[]>([]); const [loading,setLoading]=useState(true); const [error,setError]=useState(''); const [attempt,setAttempt]=useState(0); useEffect(()=>{let active=true;let unsubscribe:undefined|(()=>void);setLoading(true);setError('');locationService.getLocations().then(data=>{if(!active)return;setLocations(data);setLoading(false);unsubscribe=locationService.subscribe(setLocations,e=>setError(e.message));}).catch(()=>{if(active){setError('We couldn’t load the spaces. Please try again.');setLoading(false);}});return()=>{active=false;unsubscribe?.();};},[attempt]);return {locations,loading,error,retry:()=>setAttempt(a=>a+1)}; }
