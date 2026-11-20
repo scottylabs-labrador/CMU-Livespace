@@ -74,7 +74,7 @@ async function fetchFromSupabase(): Promise<SpaceLocation[]> {
       history: locHistory,
       awaitingData: false,
     };
-  });
+  }).sort((a, b) => Number(a.awaitingData) - Number(b.awaitingData));
 }
 
 const supabaseService: LocationService = {
