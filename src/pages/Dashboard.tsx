@@ -22,14 +22,21 @@ export function Dashboard() {
       <main>
         <div className="location-heading">
           <span className="cafe-icon"><Coffee size={28} strokeWidth={1.6} aria-hidden="true" /></span>
-          <h1>Skibo Cafe</h1>
+          <h1>{space?.name ?? 'CMU Space'}</h1>
           <p>A feel for the space, before you go.</p>
         </div>
         {error && <div className="error" role="alert"><span>{error}</span><button onClick={retry}>Try again</button></div>}
-        {loading ? <div className="skeleton" role="status"><span>Checking the cafe…</span></div> : space ? <>
-          <CurrentConditions space={space} />
-          <p className="freshness"><span className="live-dot" />Mock live data<span className="separator">·</span>Updated {age === 0 ? 'just now' : `${age}s ago`}</p>
-        </> : !error && <div className="error" role="status">Cafe readings are unavailable.<button onClick={retry}>Try again</button></div>}
+        {loading ? <div className="skeleton" role="status"><span>Checking the space…</span></div> : space ? <>
+          {space.awaitingData
+            ? <div className="error" role="status">Sensor connected — awaiting first reading.</div>
+            : <CurrentConditions space={space} />}
+          <p className="freshness">
+            <span className="live-dot" />
+            {space.awaitingData ? 'No data yet' : 'Live data'}
+            <span className="separator">·</span>
+            {space.awaitingData ? 'Sensor not yet reporting' : age === 0 ? 'Updated just now' : `Updated ${age}s ago`}
+          </p>
+        </> : !error && <div className="error" role="status">Readings are unavailable.<button onClick={retry}>Try again</button></div>}
         <footer><ShieldCheck size={18} aria-hidden="true" /><p>CMU Livespace estimates environmental sound and activity without cameras, identity tracking, or storing conversations.</p></footer>
       </main>
     </>
