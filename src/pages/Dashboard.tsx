@@ -10,7 +10,7 @@ export function Dashboard() {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
-  const space = locations[0];
+  const space = locations.find(l => !l.awaitingData) ?? locations[0];
   const age = space ? Math.max(0, Math.floor((now - Date.parse(space.updatedAt)) / 1000)) : 0;
 
   return (
